@@ -1,0 +1,7 @@
+gen_images.log
+gen_images.out
+images/yamazawa-logo.png
+.DS_Store
+nohup.out
+__pycache__/
+*.pyc

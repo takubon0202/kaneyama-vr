@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ヤマザワ 金山中央公民館デジタル店｜店内マップ</title>
+<style>
+  /* ============================================================
+     VR SHELF UI  —  縦長 16:9 (1080 x 1920) / 実機 75inch
+     ヤマザワ ブランド版（青緑×白／明るく元気・地域密着）
+     理念：お客様に安心と豊かさを提供し地域の健康元気を応援する
+     スローガン：地域に愛される、健康元気な100年企業へ
+     ※画像/SVGは未使用。すべて HTML/CSS のブロックで描画
+     ============================================================ */
+  :root{
+    /* ヤマザワ コーポレートカラー（ロゴ準拠：青・緑・白） */
+    --ym-blue:#4472c4; --ym-blue-d:#34579e; --ym-blue-l:#6f97d8;
+    --ym-green:#1fa866; --ym-green-d:#16804e;
+    --cool:#eef4f8; --cool2:#e2ecf3; --paper:#ffffff;
+    --ink:#1f2a33; --ink-dim:#6f8190; --line:rgba(40,110,160,.16);
+    --glow:0 6px 22px rgba(10,134,203,.28);
+    /* 売場フラットカラー */
+    --produce:#5cb531; --fish:#2f9fd6; --meat:#e3786a; --deli:#e79a2f;
+    --dairy:#7cc0e0; --bakery:#e6b33e; --himawari:#6cbf3e; --sweets:#b07fd0;
+    --noodle:#4cae9a; --season:#a99bd9; --drink:#5bb6e0; --frozen:#3f7fc4;
+    --liquor:#8d6fbf; --daily:#9aa6b2; --sanchoku:#3f9a1f; --rice:#dca52f; --flower:#df8db4;
+    --wall:#c4d3dd; --floor:#fbfdff; --gray:#a6b4c0;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{height:100%;background:#c9d6df;font-family:"Hiragino Kaku Gothic ProN","Noto Sans JP","Yu Gothic",sans-serif;color:var(--ink);overflow:hidden;}
+
+  #stage-wrap{position:fixed;inset:0;overflow:hidden;background:radial-gradient(120% 80% at 50% 0%,#e7eef4 0%,#c2d0db 70%);}
+  #stage{position:absolute;top:50%;left:50%;width:1080px;height:1920px;overflow:hidden;border-radius:8px;visibility:hidden;
+    background:radial-gradient(140% 50% at 50% -6%, #fff 0%, var(--cool) 46%, var(--cool2) 100%);
+    box-shadow:0 0 0 2px rgba(10,134,203,.12), 0 40px 120px rgba(20,50,70,.45);
+    transform-origin:center center;transform:translate(-50%,-50%) scale(0.5);}
+
+  /* ====================== ヘッダー（白・ロゴ） ====================== */
+  header{position:relative;z-index:5;margin:32px 36px 0;border-radius:24px;padding:30px 40px;
+    display:flex;align-items:center;justify-content:space-between;background:#fff;
+    border:1px solid var(--line);box-shadow:0 14px 30px rgba(20,60,90,.14);}
+  header::after{content:"";position:absolute;left:0;right:0;bottom:0;height:7px;border-radius:0 0 24px 24px;
+    background:linear-gradient(90deg,var(--ym-blue),var(--ym-green));}
+  .brand{display:flex;align-items:center;gap:20px;}
+  /* ヤマザワ ロゴ（青×緑 斜め分割＋白スウォッシュ＋黒文字） */
+  .logo{display:flex;align-items:center;gap:16px;}
+  .mark{position:relative;width:82px;height:82px;border-radius:8px;overflow:hidden;background:var(--ym-blue);
+    box-shadow:0 6px 14px rgba(30,50,90,.18);}
+  .mark .g{position:absolute;left:-20%;top:40%;width:160%;height:150%;background:var(--ym-green);
+    transform:rotate(-31deg);transform-origin:left center;}
+  .mark .w{position:absolute;left:-20%;top:31%;width:170%;height:15%;background:#fff;
+    transform:rotate(-31deg);transform-origin:left center;border-radius:99px;}
+  .logo .wm{font-weight:900;font-size:46px;color:#141414;letter-spacing:3px;line-height:1;}
+  .binfo h1{font-size:32px;font-weight:900;letter-spacing:.5px;color:var(--ink);}
+  .binfo .sub{font-size:17px;color:var(--ym-blue);font-weight:700;margin-top:5px;letter-spacing:1px;}
+  .binfo .slogan{font-size:15px;color:var(--ink-dim);margin-top:7px;letter-spacing:.5px;display:flex;align-items:center;gap:8px;}
+  .binfo .slogan::before{content:"";width:16px;height:3px;border-radius:2px;background:var(--ym-green);}
+  .status{text-align:right;}
+  .clock{font-size:46px;font-weight:800;font-variant-numeric:tabular-nums;letter-spacing:1px;color:var(--ym-blue-d);}
+  .meta{font-size:18px;color:var(--ink-dim);margin-top:5px;display:flex;gap:14px;justify-content:flex-end;align-items:center;}
+  .meta .dot{width:10px;height:10px;border-radius:50%;background:var(--ym-green);box-shadow:0 0 8px var(--ym-green);}
+
+  /* ====================== 見出し ====================== */
+  .titlebar{position:relative;z-index:5;padding:24px 48px 0;display:flex;align-items:flex-end;justify-content:space-between;}
+  .titlebar .big{font-size:62px;font-weight:900;letter-spacing:3px;line-height:1;color:var(--ink);}
+  .titlebar .big small{display:block;font-size:20px;font-weight:800;color:var(--ym-blue);letter-spacing:7px;margin-bottom:12px;}
+  .titlebar .hint{font-size:21px;color:var(--ink-dim);display:flex;align-items:center;gap:10px;}
+  .titlebar .hint b{color:var(--ym-blue);font-weight:800;}
+  .tbright{display:flex;flex-direction:column;align-items:flex-end;gap:12px;}
+  /* 本日のおすすめ・特売 ボタン（目立つ赤橙＋パルス） */
+  .dealbtn{display:flex;align-items:center;gap:14px;padding:20px 30px;border-radius:18px;cursor:pointer;border:none;
+    background:linear-gradient(120deg,#ff7a2f,#e5251e);color:#fff;font-weight:900;font-size:28px;letter-spacing:1px;
+    box-shadow:0 10px 26px rgba(229,37,30,.42);animation:dealpulse 1.8s ease-in-out infinite;}
+  .dealbtn:active{transform:scale(.97);}
+  .dealbtn .db-badge{font-size:18px;font-weight:900;background:#fff;color:#e5251e;padding:5px 12px;border-radius:8px;letter-spacing:1px;}
+  .dealbtn .db-cnt{font-size:21px;font-weight:800;background:rgba(255,255,255,.25);padding:4px 14px;border-radius:99px;}
+  .dealbtn .db-arrow{font-size:32px;line-height:1;}
+  @keyframes dealpulse{0%,100%{box-shadow:0 10px 26px rgba(229,37,30,.4)}50%{box-shadow:0 12px 44px rgba(229,37,30,.72)}}
+
+  /* ====================== 順路凡例 ====================== */
+  .routelegend{position:relative;z-index:5;margin:16px 36px 0;padding:14px 24px;border-radius:14px;
+    background:linear-gradient(90deg,rgba(68,114,196,.1),rgba(31,168,102,.1));border:1px solid var(--line);
+    display:flex;align-items:center;gap:16px;}
+  .routelegend .rt-ttl{flex:0 0 auto;font-size:19px;font-weight:900;color:var(--ym-blue-d);
+    background:#fff;border-radius:99px;padding:8px 18px;box-shadow:0 2px 6px rgba(20,60,90,.1);}
+  .routelegend .rt-seq{font-size:21px;font-weight:800;color:var(--ink);display:flex;align-items:center;flex-wrap:wrap;gap:4px;}
+  .routelegend .rt-seq b{display:inline-grid;place-items:center;width:26px;height:26px;border-radius:50%;
+    background:var(--ym-green);color:#fff;font-size:15px;margin-right:3px;}
+  .routelegend .rt-seq i{color:var(--ym-blue);font-style:normal;font-weight:900;margin:0 4px;}
+
+  /* ====================== フロアマップ（白パネル） ====================== */
+  .map-wrap{position:relative;z-index:4;margin:18px 36px 0;height:1110px;border-radius:26px;padding:26px;
+    background:var(--paper);border:1px solid var(--line);box-shadow:0 26px 50px rgba(20,60,90,.16), inset 0 2px 0 #fff;}
+  .map-wrap::before{content:"フロアガイド";position:absolute;top:-1px;left:32px;transform:translateY(-50%);
+    background:linear-gradient(90deg,var(--ym-blue),var(--ym-green));color:#fff;font-size:18px;font-weight:800;letter-spacing:2px;
+    padding:9px 22px;border-radius:999px;box-shadow:0 8px 16px rgba(10,134,203,.3);}
+  .store{position:absolute;inset:26px;top:42px;border-radius:16px;background:var(--floor);
+    border:5px solid var(--wall);box-shadow:inset 0 0 0 2px #fff, inset 0 0 40px rgba(120,150,170,.1);}
+  .floor{position:absolute;inset:0;}
+
+  /* 売場ブロック共通 */
+  .zone{position:absolute;border-radius:9px;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;
+    text-align:center;padding:8px;color:#fff;font-weight:800;letter-spacing:.5px;line-height:1.16;
+    box-shadow:0 5px 11px rgba(30,60,80,.18), inset 0 1px 0 rgba(255,255,255,.3);
+    transition:transform .15s ease, box-shadow .25s ease, filter .2s ease;border:1px solid rgba(255,255,255,.3);}
+  .zone:active{transform:scale(.96);filter:brightness(1.07);}
+  .zone .ic{font-size:30px;line-height:1;margin-bottom:4px;filter:drop-shadow(0 2px 3px rgba(0,0,0,.2));}
+  .zone .lbl{font-size:22px;text-shadow:0 1px 3px rgba(0,0,0,.25);}
+  .zone.sm .ic{font-size:22px;margin-bottom:2px;}
+  .zone.sm .lbl{font-size:15px;letter-spacing:0;}
+  .zone .rno{position:absolute;top:7px;left:8px;width:32px;height:32px;border-radius:50%;background:#fff;
+    color:var(--ym-blue-d);font-size:19px;font-weight:900;display:grid;place-items:center;
+    box-shadow:0 2px 6px rgba(0,0,0,.28);border:2px solid var(--ym-green);}
+  .zone .cnt{position:absolute;left:50%;bottom:6px;transform:translateX(-50%);white-space:nowrap;
+    font-size:13px;font-weight:700;opacity:0;background:rgba(0,0,0,.3);padding:3px 10px;border-radius:99px;transition:opacity .2s;}
+  .zone:hover .cnt{opacity:.95;}
+  .zone.dark{color:#33414c;} .zone.dark .lbl{text-shadow:none;} .zone.dark .ic{filter:none;}
+  .zone.outline{background:#fff !important;color:#33414c;border:2px solid var(--wall);box-shadow:0 4px 8px rgba(30,60,80,.14);}
+  .zone::after{content:"";position:absolute;inset:-3px;border-radius:inherit;border:2.5px solid var(--ym-blue);opacity:0;transition:opacity .2s;}
+  .zone:hover::after{opacity:.9;}
+
+  /* 固定要素：レジ・サービス・入口・現在地 */
+  .reg{position:absolute;border-radius:9px;background:var(--gray);color:#33414c;display:flex;flex-direction:column;align-items:center;justify-content:center;
+    font-size:22px;font-weight:800;letter-spacing:1px;box-shadow:inset 0 1px 0 rgba(255,255,255,.4);}
+  .reg small{font-size:14px;font-weight:700;color:#5c6a76;margin-top:2px;letter-spacing:0;}
+  .service{position:absolute;border-radius:9px;background:var(--ym-blue-d);color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;
+    font-size:19px;font-weight:800;text-align:center;line-height:1.2;padding:6px;box-shadow:inset 0 1px 0 rgba(255,255,255,.25);}
+  .service small{font-size:12px;font-weight:600;opacity:.85;margin-top:3px;}
+  .entrance{position:absolute;display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--ink);font-weight:800;}
+  .entrance .door{width:100%;height:14px;background:repeating-linear-gradient(90deg,var(--wall) 0 10px,transparent 10px 20px);}
+  .entrance .t{font-size:30px;letter-spacing:4px;margin-top:6px;}
+  .entrance .t small{display:block;font-size:15px;color:var(--ink-dim);letter-spacing:3px;}
+  .youhere{position:absolute;display:flex;flex-direction:column;align-items:center;gap:6px;color:var(--ym-blue-d);font-size:15px;font-weight:800;}
+  .youhere .ping{width:22px;height:22px;border-radius:50%;background:var(--ym-blue);box-shadow:var(--glow);position:relative;}
+  .youhere .ping::after{content:"";position:absolute;inset:-9px;border-radius:50%;border:2px solid var(--ym-blue);animation:ping 1.8s ease-out infinite;}
+  @keyframes ping{0%{transform:scale(.6);opacity:.9}100%{transform:scale(1.9);opacity:0}}
+
+  /* ====================== フッター ====================== */
+  .footer{position:absolute;left:0;right:0;bottom:0;z-index:5;padding:24px 40px 38px;
+    background:linear-gradient(0deg,var(--cool) 60%,transparent);}
+  .ribbon{display:flex;gap:14px;}
+  .chip{flex:0 0 auto;display:flex;align-items:center;gap:10px;padding:16px 24px;border-radius:16px;background:#fff;
+    border:1.5px solid rgba(10,134,203,.2);color:var(--ink);font-size:21px;font-weight:800;box-shadow:0 6px 14px rgba(20,60,90,.08);}
+  .chip .cdot{width:14px;height:14px;border-radius:50%;background:var(--ym-green);flex:0 0 auto;}
+  .chip .cdot.b{background:var(--ym-blue);}
+  .swipe-hint{margin-top:18px;text-align:center;color:var(--ym-blue-d);font-size:23px;font-weight:800;letter-spacing:3px;display:flex;align-items:center;justify-content:center;gap:14px;}
+  /* タッチ誘導ドット（絵文字不使用） */
+  .tapdot{position:relative;width:22px;height:22px;border-radius:50%;flex:0 0 auto;
+    background:var(--ym-green);box-shadow:0 0 0 0 rgba(31,168,102,.5);animation:tapdot 1.5s ease-out infinite;}
+  .tapdot.b{background:var(--ym-blue);box-shadow:0 0 0 0 rgba(68,114,196,.5);}
+  @keyframes tapdot{0%{box-shadow:0 0 0 0 rgba(31,168,102,.45)}70%{box-shadow:0 0 0 16px rgba(31,168,102,0)}100%{box-shadow:0 0 0 0 rgba(31,168,102,0)}}
+
+  /* ====================== 商品一覧オーバーレイ ====================== */
+  .products{position:absolute;inset:0;z-index:20;transform:translateY(100%);transition:transform .42s cubic-bezier(.22,1,.36,1);
+    background:linear-gradient(180deg,var(--cool),var(--cool2));display:flex;flex-direction:column;}
+  .products.open{transform:translateY(0);}
+  .p-head{position:relative;padding:40px 48px 22px;overflow:hidden;flex:0 0 auto;color:#fff;
+    background:linear-gradient(120deg,var(--ph,var(--ym-blue)),var(--ym-blue-d));box-shadow:0 12px 26px rgba(20,70,100,.25);}
+  .p-head::after{content:"";position:absolute;right:-40px;top:-70px;width:220px;height:220px;border-radius:50%;background:rgba(255,255,255,.1);}
+  .p-top{position:relative;display:flex;align-items:center;justify-content:space-between;z-index:1;}
+  .back{display:flex;align-items:center;gap:14px;padding:18px 30px;border-radius:999px;cursor:pointer;background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.4);font-size:26px;font-weight:800;color:#fff;}
+  .back:active{transform:scale(.96);} .back .ar{font-size:30px;}
+  .p-cart{display:flex;align-items:center;gap:12px;padding:18px 28px;border-radius:999px;background:#fff;color:var(--ym-blue-d);font-weight:900;font-size:24px;box-shadow:0 8px 18px rgba(0,0,0,.18);}
+  .p-cart .badge{min-width:34px;height:34px;border-radius:99px;background:var(--ym-green);color:#fff;display:grid;place-items:center;font-size:20px;padding:0 8px;}
+  .p-title{position:relative;z-index:1;margin-top:26px;display:flex;align-items:center;gap:22px;}
+  .p-title .pico{width:100px;height:100px;border-radius:24px;display:grid;place-items:center;font-size:56px;background:rgba(255,255,255,.92);box-shadow:0 14px 26px rgba(0,0,0,.22);}
+  .p-title h2{font-size:56px;font-weight:900;letter-spacing:1px;} .p-title p{font-size:21px;color:rgba(255,255,255,.85);margin-top:6px;}
+  .filters{position:relative;display:flex;gap:14px;padding:24px 48px 4px;flex-wrap:wrap;flex:0 0 auto;}
+  .filters button{padding:14px 28px;border-radius:999px;border:1.5px solid var(--line);cursor:pointer;background:#fff;color:var(--ink-dim);font-size:22px;font-weight:800;}
+  .filters button.on{background:var(--ym-blue);color:#fff;border-color:var(--ym-blue);box-shadow:var(--glow);}
+  .grid{flex:1 1 auto;overflow-y:auto;padding:22px 48px 56px;display:grid;grid-template-columns:repeat(2,1fr);gap:26px;align-content:start;}
+  .grid::-webkit-scrollbar{width:8px;} .grid::-webkit-scrollbar-thumb{background:rgba(10,134,203,.3);border-radius:8px;}
+  .card{position:relative;border-radius:22px;padding:24px;cursor:pointer;background:#fff;border:1px solid var(--line);
+    box-shadow:0 14px 26px rgba(20,60,90,.1);transition:transform .16s ease, box-shadow .2s;display:flex;flex-direction:column;min-height:360px;}
+  .card:active{transform:scale(.97);}
+  .card:hover{box-shadow:0 18px 30px rgba(10,134,203,.16);}
+  .card .thumb{height:188px;border-radius:16px;display:grid;place-items:center;background:linear-gradient(180deg,#f0f8fd,#e6f2f9);border:1px solid rgba(10,134,203,.08);position:relative;overflow:hidden;}
+  .mono{font-weight:900;line-height:1;}
+  .card .thumb .mono{font-size:96px;}
+  .sheet .m-thumb .mono{font-size:124px;}
+  /* 生成画像（あれば文字を覆う／読み込み失敗時は自動でモノグラム表示） */
+  .pimg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:inherit;}
+  /* 商品ヘッダーのモノグラムタイル */
+  .pico .mono{font-size:62px;}
+  .card .thumb .tag{position:absolute;top:12px;left:12px;font-size:16px;font-weight:800;padding:6px 14px;border-radius:999px;color:#fff;}
+  .card .thumb .soldout{position:absolute;inset:0;background:rgba(30,42,51,.55);display:grid;place-items:center;font-size:26px;font-weight:800;letter-spacing:4px;color:#fff;}
+  .card h3{font-size:27px;font-weight:800;margin-top:18px;line-height:1.25;color:var(--ink);}
+  .card .desc{font-size:18px;color:var(--ink-dim);margin-top:7px;line-height:1.4;flex:1 1 auto;}
+  .card .row{display:flex;align-items:flex-end;justify-content:space-between;margin-top:14px;}
+  .card .price{font-size:38px;font-weight:900;color:var(--ym-blue-d);} .card .price small{font-size:19px;color:var(--ink-dim);font-weight:700;margin-left:4px;}
+  /* 割引表示 */
+  .offtag{position:absolute;top:12px;right:12px;font-size:18px;font-weight:900;padding:6px 12px;border-radius:10px;
+    background:linear-gradient(135deg,#ff7a2f,#e5251e);color:#fff;box-shadow:0 4px 10px rgba(229,37,30,.35);z-index:2;}
+  .pricebox{display:flex;flex-direction:column;line-height:1;}
+  .pricebox .was{font-size:20px;color:var(--ink-dim);text-decoration:line-through;font-weight:700;}
+  .pricebox .now{font-size:40px;font-weight:900;color:#e5251e;margin-top:3px;}
+  .pricebox .now small{font-size:18px;color:var(--ink-dim);font-weight:700;margin-left:4px;}
+  .m-price .m-was{font-size:30px;color:var(--ink-dim);text-decoration:line-through;font-weight:700;margin-right:12px;}
+  .m-price .m-now{color:#e5251e;}
+  .m-price .m-off{display:inline-block;font-size:24px;font-weight:900;color:#fff;background:linear-gradient(135deg,#ff7a2f,#e5251e);padding:6px 14px;border-radius:10px;margin-left:14px;vertical-align:middle;}
+  .card .add{width:62px;height:62px;border-radius:16px;display:grid;place-items:center;font-size:36px;font-weight:800;background:var(--ym-green);color:#fff;box-shadow:0 6px 16px rgba(92,181,49,.4);}
+  .card .add:active{transform:scale(.9);}
+
+  .modal{position:absolute;inset:0;z-index:40;display:none;align-items:flex-end;justify-content:center;background:rgba(20,35,45,.5);backdrop-filter:blur(5px);}
+  .modal.open{display:flex;}
+  .sheet{width:100%;max-height:85%;overflow-y:auto;background:#fff;border-top-left-radius:34px;border-top-right-radius:34px;border-top:4px solid var(--ym-blue);padding:36px 48px 52px;box-shadow:0 -30px 60px rgba(0,0,0,.3);animation:up .35s;}
+  @keyframes up{from{transform:translateY(40px)}to{transform:translateY(0)}}
+  .sheet .bar{width:80px;height:8px;border-radius:99px;background:rgba(0,0,0,.12);margin:0 auto 26px;}
+  .sheet .m-top{display:flex;gap:28px;}
+  .sheet .m-thumb{position:relative;overflow:hidden;width:230px;height:230px;border-radius:24px;display:grid;place-items:center;font-size:130px;flex:0 0 auto;background:linear-gradient(180deg,#f0f8fd,#e6f2f9);border:1px solid rgba(10,134,203,.1);}
+  .sheet h2{font-size:48px;font-weight:900;color:var(--ink);} .sheet .m-sub{font-size:22px;color:var(--ink-dim);margin-top:10px;line-height:1.5;}
+  .sheet .specs{display:flex;gap:12px;margin-top:20px;flex-wrap:wrap;}
+  .sheet .specs span{font-size:20px;font-weight:700;padding:10px 18px;border-radius:13px;background:var(--cool2);color:var(--ink);}
+  .sheet .m-price{font-size:62px;font-weight:900;margin-top:24px;color:var(--ym-blue-d);} .sheet .m-price small{font-size:24px;color:var(--ink-dim);}
+  .sheet .m-actions{display:flex;gap:18px;margin-top:28px;}
+  .sheet .btn{flex:1;text-align:center;padding:28px;border-radius:20px;font-size:30px;font-weight:800;cursor:pointer;}
+  .sheet .btn.ghost{background:var(--cool2);border:1px solid var(--line);color:var(--ink);}
+  .sheet .btn.buy{background:var(--ym-green);color:#fff;box-shadow:0 6px 16px rgba(92,181,49,.4);}
+  .sheet .btn:active{transform:scale(.97);}
+
+  .toast{position:absolute;left:50%;top:120px;transform:translate(-50%,-30px);z-index:60;background:var(--ym-green);color:#fff;font-size:26px;font-weight:800;padding:22px 40px;border-radius:18px;box-shadow:0 20px 40px rgba(0,0,0,.28);opacity:0;pointer-events:none;transition:opacity .3s,transform .3s;display:flex;align-items:center;gap:14px;}
+  .toast.show{opacity:1;transform:translate(-50%,0);}
+</style>
+</head>
+<body>
+<div id="stage-wrap">
+  <div id="stage">
+
+    <!-- ヘッダー -->
+    <header>
+      <div class="brand">
+        <div class="logo"><div class="mark"><span class="g"></span><span class="w"></span></div><span class="wm">ヤマザワ</span></div>
+        <div class="binfo">
+          <h1>金山中央公民館デジタル店</h1>
+          <div class="sub">YAMAZAWA SUPERMARKET</div>
+          <div class="slogan">地域に愛される、健康元気な100年企業へ</div>
+        </div>
+      </div>
+      <div class="status">
+        <div class="clock" id="clock">00:00</div>
+        <div class="meta"><span id="date">--/--（-）</span><span class="dot"></span><span>営業中 9:30-21:00</span></div>
+      </div>
+    </header>
+
+    <!-- 見出し -->
+    <div class="titlebar">
+      <div class="big"><small>STORE MAP</small>店内マップ</div>
+      <div class="tbright">
+        <button class="dealbtn" id="dealbtn">
+          <span class="db-badge">SALE</span>
+          <span class="db-txt">本日のおすすめ・特売</span>
+          <span class="db-cnt" id="dealcount"></span>
+          <span class="db-arrow">›</span>
+        </button>
+        <div class="hint"><span class="tapdot b"></span><span>売場を<b>タッチ</b>すると商品一覧</span></div>
+      </div>
+    </div>
+
+    <!-- 順路凡例 -->
+    <div class="routelegend">
+      <span class="rt-ttl">おすすめ順路</span>
+      <span class="rt-seq"><b>1</b>青果<i>→</i><b>2</b>鮮魚<i>→</i><b>3</b>精肉<i>→</i><b>4</b>日配<i>→</i><b>5</b>冷凍<i>→</i>グロサリー<i>→</i><b>6</b>惣菜・パン<i>→</i>レジ</span>
+    </div>
+
+    <!-- フロアマップ -->
+    <div class="map-wrap">
+      <div class="store">
+        <div class="floor" id="floor"><!-- zones injected --></div>
+      </div>
+    </div>
+
+    <!-- フッター -->
+    <div class="footer">
+      <div class="ribbon" id="ribbon"></div>
+      <div class="swipe-hint"><span class="tapdot"></span>気になる売場をタッチしてください</div>
+    </div>
+
+    <!-- 商品一覧 -->
+    <div class="products" id="products">
+      <div class="p-head" id="phead">
+        <div class="p-top">
+          <div class="back" id="back"><span class="ar">‹</span> 店内マップへ</div>
+          <div class="p-cart">カート <span class="badge" id="cartBadge">0</span></div>
+        </div>
+        <div class="p-title"><div class="pico" id="pico"></div><div><h2 id="pname"></h2><p id="pdesc"></p></div></div>
+      </div>
+      <div class="filters" id="filters"></div>
+      <div class="grid" id="grid"></div>
+    </div>
+
+    <div class="modal" id="modal"><div class="sheet" id="sheet"></div></div>
+    <div class="toast" id="toast">カートに追加しました</div>
+
+  </div>
+</div>
+
+<script>
+/* ============================================================
+   売場データ（ヤマザワ スーパーマーケットの部門構成）
+   pos: {x,y,w,h} はフロア内の % 座標 / cls で形状指定
+   ============================================================ */
+const Z=(id,name,ico,color,cls,pos,items)=>({id,name,ico,color,cls,pos,items});
+const P=(ico,n,d,p,stk,tag,unit)=>({ico,n,d,p,stk,tag,unit});
+
+const CORNERS=[
+  /* ---- 入口正面：イートイン＆ベーカリー ---- */
+  Z('himawari','軽食ひまわり','','var(--himawari)','',{x:1,y:1,w:47,h:8},[
+    P('','ひまわりラーメン','あっさり中華そば',650,20,['名物','#5cb531']),
+    P('','カレーライス','どこか懐かしい味',600,18),
+    P('','ソフトクリーム','濃厚ミルク',300,30,['人気','#0a86cb']),
+    P('','たこ焼き 8個','外カリ中とろ',420,12),
+    P('','玉こんにゃく','山形名物',200,25,['山形','#3f9a1f']),
+    P('','ホットコーヒー','挽きたて',180,40),
+  ]),
+  Z('bakery','ベーカリー','','var(--bakery)','',{x:51,y:1,w:48,h:8},[
+    P('','山形食パン','もっちり1.5斤',280,14,['焼きたて','#e6b33e']),
+    P('','クロワッサン','発酵バター',150,18),
+    P('','フランスパン','外はパリッと',220,9),
+    P('','カレーパン','揚げたて',160,11,['人気','#0a86cb']),
+    P('','メロンパン','サクサク',140,15),
+    P('','あんバターベーグル','十勝あん',190,0),
+  ]),
+  /* ---- 生鮮 周縁部 ---- */
+  Z('produce','青果','','var(--produce)','',{x:1,y:11,w:23,h:17},[
+    P('','さくらんぼ 佐藤錦','山形県産・秀品',1280,6,['旬','#df8db4']),
+    P('','ラ・フランス','県産・大玉',580,9,['県産','#5cb531']),
+    P('','だだちゃ豆','鶴岡名産',480,7,['名産','#3f9a1f']),
+    P('','トマト','完熟・大玉',280,16,['朝採れ','#5cb531']),
+    P('','ほうれん草','地場産',160,14),
+    P('','しめじ','株採り',150,0),
+  ]),
+  Z('fish','鮮魚','','var(--fish)','',{x:26,y:11,w:18,h:17},[
+    P('','本まぐろ 刺身','大トロ・中トロ',1980,5,['鮮度抜群','#2f9fd6']),
+    P('','サーモン 柵','刺身グレード',880,11,['人気','#0a86cb']),
+    P('','ぶり 切身','照り焼き用4切',780,8),
+    P('','真鯛 刺身用','明石産',980,6),
+    P('','するめいか','煮付け用',380,9),
+    P('','あじ 開き','一夜干し',420,0),
+  ]),
+  Z('meat','精肉','','var(--meat)','',{x:46,y:11,w:17,h:17},[
+    P('','山形牛 切落し','すき焼き用',1480,5,['ブランド','#e3786a']),
+    P('','米沢豚 バラ','県産銘柄豚',780,9,['県産','#5cb531']),
+    P('','若鶏もも肉','朝引き',580,13),
+    P('','牛豚合いびき','ハンバーグに',480,11),
+    P('','ベーコン','厚切り',420,7),
+    P('','あらびきウインナー','国産豚',360,0),
+  ]),
+  Z('deli','惣菜','','var(--deli)','',{x:65,y:11,w:15,h:17},[
+    P('','若鶏唐揚げ','にんにく醤油',480,12,['できたて','#e79a2f']),
+    P('','天ぷら盛合せ','海老・野菜',680,7),
+    P('','海鮮ちらし','彩り豊か',880,5,['人気','#0a86cb']),
+    P('','ポテトサラダ','自家製',280,10),
+    P('','おにぎり3種','紅鮭・梅・昆布',390,15),
+    P('','玉こんにゃく煮','山形名物',260,0),
+  ]),
+  Z('dairy','日配','','var(--dairy)','',{x:82,y:11,w:16,h:17},[
+    P('','牛乳 1L','成分無調整',230,18),
+    P('','木綿豆腐','濃厚大豆',150,16),
+    P('','のむヨーグルト','乳酸菌入り',170,12,['人気','#0a86cb']),
+    P('','たまご 10個','産直たまご',280,9),
+    P('','納豆 3パック','国産大豆',120,20),
+    P('','キムチ','本格熟成',320,0),
+  ]),
+  /* ---- 中央：グロサリー通路 ---- */
+  Z('sweets','菓子・スナック','','var(--sweets)','',{x:1,y:30,w:11,h:23},[
+    P('','ポテトチップス','うすしお',160,22,['人気','#0a86cb']),
+    P('','板チョコ','ミルク',120,18),
+    P('','醤油せんべい','香ばし',180,14),
+    P('','果実グミ','ぶどう',140,16),
+    P('','バタークッキー','缶入り',480,6),
+    P('','ポップコーン','塩バター',230,0),
+  ]),
+  Z('noodle','麺・乾物','','var(--noodle)','',{x:13,y:30,w:11,h:23},[
+    P('','即席麺 5食','醤油味',420,20),
+    P('','乾麺パスタ','1.6mm',320,12),
+    P('','乾そば','山形産そば粉',480,8,['県産','#5cb531']),
+    P('','日高昆布','だし用',580,9),
+    P('','花かつお','大袋',420,11),
+    P('','焼き海苔','全形10枚',480,0),
+  ]),
+  Z('season','調味料・缶詰','','var(--season)','',{x:25,y:30,w:11,h:23},[
+    P('','本醸造醤油','地元蔵元',380,14),
+    P('','合わせ味噌','米麹仕立て',480,9,['人気','#0a86cb']),
+    P('','サラダ油','1000g',360,12),
+    P('','ツナ缶 3個','まぐろ油漬',290,15),
+    P('','トマトケチャップ','大容量',260,8),
+    P('','和風だしの素','顆粒',320,0),
+  ]),
+  Z('drink','飲料・お茶','','var(--drink)','',{x:37,y:30,w:11,h:23},[
+    P('','天然水 2L','山形の水',110,30,['特売','#5cb531']),
+    P('','緑茶 2L','国産茶葉',150,22),
+    P('','麦茶 2L','カフェインゼロ',140,18),
+    P('','炭酸飲料 1.5L','すっきり',160,14),
+    P('','野菜ジュース','1日分の野菜',130,16,['人気','#0a86cb']),
+    P('','缶コーヒー 6本','微糖',480,0),
+  ]),
+  Z('frozen','冷凍食品','','var(--frozen)','',{x:49,y:30,w:11,h:23},[
+    P('','冷凍生餃子 12個','国産野菜',380,10,['人気','#0a86cb']),
+    P('','冷凍からあげ','レンジ調理',420,12),
+    P('','冷凍ピザ','石窯風',420,7),
+    P('','バニラアイス','6個入',300,15),
+    P('','冷凍うどん 5食','コシ強め',280,18,['特売','#5cb531']),
+    P('','冷凍野菜ミックス','彩り3種',250,0),
+  ]),
+  Z('liquor','お酒','','var(--liquor)','',{x:61,y:30,w:11,h:23},[
+    P('','山形地酒 純米','蔵元直送',1480,6,['県産','#5cb531']),
+    P('','ビール 6缶','プレミアム',1380,9,['人気','#0a86cb']),
+    P('','缶チューハイ','レモン 6本',780,14),
+    P('','赤ワイン','フルボディ',980,5),
+    P('','日本酒 パック','晩酌に',680,11),
+    P('','本格焼酎','麦',1180,0),
+  ]),
+  Z('daily','日用品・雑貨','','var(--daily)','dark',{x:74,y:30,w:24,h:23},[
+    P('','トイレットペーパー','12ロール',430,12),
+    P('','ボックスティッシュ','5箱',330,15),
+    P('','液体洗剤','詰替用',380,9,['特売','#5cb531']),
+    P('','乾電池 単3×4','アルカリ',280,11),
+    P('','食品用ラップ','30cm',230,14),
+    P('','ごみ袋 45L','30枚',280,0),
+  ]),
+  /* ---- 手前：産直・米・花 ---- */
+  Z('sanchoku','地場産直コーナー','','var(--sanchoku)','',{x:1,y:56,w:34,h:11},[
+    P('','朝採れとうもろこし','地元農家直送',280,9,['朝採れ','#5cb531']),
+    P('','産直野菜セット','旬の詰合せ',680,6,['人気','#0a86cb']),
+    P('','曲がりきゅうり','訳あり・お得',150,12,['お得','#3f9a1f']),
+    P('','自家製漬物','農家の味',380,8),
+    P('','産地直送りんご','蜜入り',420,7),
+    P('','地場はちみつ','非加熱',880,0),
+  ]),
+  Z('rice','お米・飲料ケース','','var(--rice)','',{x:37,y:56,w:23,h:11},[
+    P('','つや姫 5kg','特別栽培米',2980,8,['ブランド','#e79a2f']),
+    P('','はえぬき 5kg','山形県産',2480,11,['人気','#0a86cb']),
+    P('','雪若丸 5kg','大粒つや',2680,6),
+    P('','天然水 2L×6','ケース',620,9,['特売','#5cb531']),
+    P('','もち米 2kg','こがねもち',980,7),
+    P('','玄米 5kg','栄養豊富',2280,0),
+  ]),
+  Z('flower','花・園芸','','var(--flower)','dark',{x:74,y:56,w:24,h:11},[
+    P('','季節の花束','おまかせ',1280,7),
+    P('','仏花','一対',880,10),
+    P('','観葉植物','卓上サイズ',1480,5),
+    P('','野菜苗','トマト・きゅうり',280,12,['春','#5cb531']),
+    P('','培養土 14L','花野菜用',498,8),
+    P('','ひまわりの種','栽培用',320,0),
+  ]),
+];
+
+/* 各商品に画像パスを割当（images/<売場id>_<番号>.png）。未生成なら文字に自動フォールバック */
+CORNERS.forEach(c=>c.items.forEach((it,i)=>{it.img=`images/${c.id}_${i}.png`;}));
+
+/* ============================================================
+   一般的なスーパーの順路（黄金ルート）に基づく売場再配置
+   入口(右下)→ 右壁を上へ ①青果→②鮮魚 → 奥(上)③精肉→④日配→⑤冷凍
+   → 中央グロサリー（菓子・調味料等）→ 左壁 ⑥惣菜 → レジ前にベーカリー
+   生鮮を壁沿いに周回（反時計回り）。惣菜・パンはレジ前。
+   ============================================================ */
+const POS={
+  produce:{x:80,y:35,w:18,h:31}, fish:{x:80,y:11,w:18,h:22},
+  meat:{x:56,y:11,w:22,h:13}, dairy:{x:30,y:11,w:24,h:13}, frozen:{x:1,y:11,w:27,h:13},
+  deli:{x:1,y:26,w:18,h:28},
+  sweets:{x:20,y:26,w:13,h:13}, noodle:{x:34,y:26,w:13,h:13}, season:{x:48,y:26,w:13,h:13},
+  drink:{x:62,y:26,w:16,h:13}, liquor:{x:20,y:41,w:13,h:13}, daily:{x:34,y:41,w:21,h:13},
+  himawari:{x:56,y:41,w:22,h:13},
+  bakery:{x:1,y:56,w:18,h:10}, sanchoku:{x:20,y:56,w:26,h:10}, rice:{x:48,y:56,w:14,h:10}, flower:{x:64,y:56,w:14,h:10},
+};
+const ROUTE={produce:1,fish:2,meat:3,dairy:4,frozen:5,deli:6};
+CORNERS.forEach(c=>{if(POS[c.id])c.pos=POS[c.id];});
+
+/* ============ 本日の割引（タグに応じて自動で割引価格を算出） ============ */
+const DEAL_RATES={'特売':.25,'お得':.20,'旬':.15,'朝採れ':.15,'限定':.15,'季節':.15,'人気':.10,'名物':.10,'できたて':.10,'焼きたて':.10,'NEW':.10};
+let dealCount=0;
+CORNERS.forEach(c=>c.items.forEach(it=>{
+  if(it.tag&&DEAL_RATES[it.tag[0]]!=null&&it.stk>0){
+    const s=Math.floor(it.p*(1-DEAL_RATES[it.tag[0]])/10)*10;
+    if(s>0&&s<it.p){it.sale=s;it.off=Math.round((1-s/it.p)*100);dealCount++;}
+  }
+}));
+
+/* ============ フロア生成 ============ */
+const floor=document.getElementById('floor');
+CORNERS.forEach(c=>{
+  const stock=c.items.reduce((a,b)=>a+b.stk,0);
+  const el=document.createElement('div');
+  el.className='zone '+(c.cls||'');
+  el.style.cssText=`left:${c.pos.x}%;top:${c.pos.y}%;width:${c.pos.w}%;height:${c.pos.h}%;background:${c.color};`;
+  const rno=ROUTE[c.id]?`<div class="rno">${ROUTE[c.id]}</div>`:'';
+  el.innerHTML=`${rno}<div class="lbl">${c.name}</div><div class="cnt">${c.items.length}品・在庫${stock}</div>`;
+  el.addEventListener('click',()=>openCorner(c.id));
+  floor.appendChild(el);
+});
+/* レジ・サービス・入口・現在地（固定） */
+const reg=document.createElement('div');reg.className='reg';
+reg.style.cssText='left:20%;top:75%;width:40%;height:10%;';
+reg.innerHTML='レジ / 会計<small>セルフレジ・有人レジ</small>';
+floor.appendChild(reg);
+
+const svc=document.createElement('div');svc.className='service';
+svc.style.cssText='left:1%;top:75%;width:17%;height:10%;';
+svc.innerHTML='サービス<small>宝くじ・宅配・証明写真</small>';
+floor.appendChild(svc);
+
+const ent=document.createElement('div');ent.className='entrance';
+ent.style.cssText='left:66%;bottom:-2px;width:26%;';
+ent.innerHTML='<div class="t">入口<small>ENTRANCE</small></div><div class="door"></div>';
+floor.appendChild(ent);
+
+const yh=document.createElement('div');yh.className='youhere';
+yh.style.cssText='left:74%;bottom:64px;';
+yh.innerHTML='<div class="ping"></div>現在地';
+floor.appendChild(yh);
+
+/* フッターチップ（ヤマザワらしさ） */
+const ribbon=document.getElementById('ribbon');
+['軽食ひまわり 営業中','地場産直コーナー','ポイントカード対応','美味しい・楽しい・お得'].forEach((t,idx)=>{
+  const d=document.createElement('div');d.className='chip';
+  d.innerHTML=`<span class="cdot${idx%2?' b':''}"></span>${t}`;ribbon.appendChild(d);});
+/* 商品名・売場名のモノグラム（先頭1文字） */
+const mono=s=>(s||'').replace(/\s/g,'').charAt(0);
+
+/* ============ 商品一覧 ============ */
+const products=document.getElementById('products'),grid=document.getElementById('grid'),filters=document.getElementById('filters');
+let cart=0,currentCorner=null;
+function openCorner(id){
+  const c=CORNERS.find(x=>x.id===id);currentCorner=c;
+  document.getElementById('pname').textContent=c.name;
+  document.getElementById('pdesc').textContent=`${c.items.length}商品　・　ヤマザワ 金山中央公民館デジタル店`;
+  const pico=document.getElementById('pico');pico.innerHTML=`<span class="mono" style="color:${c.color}">${mono(c.name)}</span>`;
+  document.getElementById('phead').style.setProperty('--ph',c.color);
+  buildFilters();renderGrid('all');products.classList.add('open');
+}
+document.getElementById('back').addEventListener('click',()=>products.classList.remove('open'));
+
+/* 本日のおすすめ・特売（全売場から割引＋イチオシを集約） */
+function openDeals(){
+  const items=[];
+  CORNERS.forEach(c=>c.items.forEach(it=>{if(it.sale||it.tag)items.push(it);}));
+  items.sort((a,b)=>((b.sale?1:0)-(a.sale?1:0))||((b.off||0)-(a.off||0)));
+  currentCorner={id:'deals',name:'本日のおすすめ・特売',color:'#e5251e',items};
+  document.getElementById('pname').textContent='本日のおすすめ・特売';
+  document.getElementById('pdesc').textContent=`割引中 ${dealCount}品 ・ イチオシ含む ${items.length}品`;
+  document.getElementById('pico').innerHTML='<span class="mono" style="color:#e5251e">特</span>';
+  document.getElementById('phead').style.setProperty('--ph','#e5251e');
+  buildFilters();renderGrid('all');products.classList.add('open');
+}
+document.getElementById('dealbtn').addEventListener('click',openDeals);
+document.getElementById('dealcount').textContent=`${dealCount}品`;
+function buildFilters(){
+  filters.innerHTML='';
+  [['all','すべて'],['sale','割引中'],['rec','おすすめ'],['stock','在庫あり']].forEach(([k,label],i)=>{
+    const b=document.createElement('button');b.textContent=label;if(i===0)b.classList.add('on');
+    b.addEventListener('click',()=>{[...filters.children].forEach(x=>x.classList.remove('on'));b.classList.add('on');renderGrid(k);});
+    filters.appendChild(b);});
+}
+function renderGrid(filter){
+  grid.innerHTML='';let items=currentCorner.items;
+  if(filter==='sale')items=items.filter(i=>i.sale);
+  if(filter==='rec')items=items.filter(i=>i.tag);
+  if(filter==='stock')items=items.filter(i=>i.stk>0);
+  items.forEach(it=>{
+    const sold=it.stk<=0,card=document.createElement('div');card.className='card';
+    const priceHTML=it.sale
+      ?`<div class="pricebox"><span class="was">¥${it.p.toLocaleString()}</span><span class="now">¥${it.sale.toLocaleString()}<small>${it.unit||'税込'}</small></span></div>`
+      :`<div class="price">¥${it.p.toLocaleString()}<small>${it.unit||'税込'}</small></div>`;
+    card.innerHTML=`<div class="thumb"><span class="mono" style="color:${currentCorner.color}">${mono(it.n)}</span><img class="pimg" src="${it.img}" alt="" onerror="this.remove()">${it.sale?`<span class="offtag">${it.off}%OFF</span>`:''}${it.tag?`<span class="tag" style="background:${it.tag[1]}">${it.tag[0]}</span>`:''}${sold?'<div class="soldout">SOLD OUT</div>':''}</div>
+      <h3>${it.n}</h3><div class="desc">${it.d}</div>
+      <div class="row">${priceHTML}${sold?'':'<div class="add">＋</div>'}</div>`;
+    const add=card.querySelector('.add');
+    if(add)add.addEventListener('click',e=>{e.stopPropagation();addCart();});
+    card.addEventListener('click',()=>openModal(it,sold));grid.appendChild(card);});
+}
+/* ============ 詳細モーダル ============ */
+const modal=document.getElementById('modal'),sheet=document.getElementById('sheet');
+function openModal(it,sold){
+  sheet.innerHTML=`<div class="bar"></div><div class="m-top"><div class="m-thumb"><span class="mono" style="color:${currentCorner.color}">${mono(it.n)}</span><img class="pimg" src="${it.img}" alt="" onerror="this.remove()"></div>
+    <div><h2>${it.n}</h2><div class="m-sub">${it.d}</div>
+    <div class="specs"><span>在庫 ${it.stk}点</span>${it.tag?`<span>${it.tag[0]}</span>`:''}${it.sale?`<span>本日特価</span>`:''}<span>金山中央公民館店</span></div>
+    ${it.sale
+      ?`<div class="m-price"><span class="m-was">¥${it.p.toLocaleString()}</span><span class="m-now">¥${it.sale.toLocaleString()}</span><span class="m-off">${it.off}%OFF</span><small> ${it.unit||'税込'}</small></div>`
+      :`<div class="m-price">¥${it.p.toLocaleString()}<small> ${it.unit||'税込'}</small></div>`}</div></div>
+    <div class="m-actions"><div class="btn ghost" id="mClose">閉じる</div>
+    <div class="btn buy" id="mBuy" style="${sold?'opacity:.35;pointer-events:none':''}">${sold?'売り切れ':'カートに入れる'}</div></div>`;
+  modal.classList.add('open');
+  sheet.querySelector('#mClose').addEventListener('click',()=>modal.classList.remove('open'));
+  if(!sold)sheet.querySelector('#mBuy').addEventListener('click',()=>{addCart();modal.classList.remove('open');});
+}
+modal.addEventListener('click',e=>{if(e.target===modal)modal.classList.remove('open');});
+/* ============ カート ============ */
+const toast=document.getElementById('toast');
+function addCart(){cart++;document.getElementById('cartBadge').textContent=cart;toast.classList.add('show');
+  clearTimeout(window._tt);window._tt=setTimeout(()=>toast.classList.remove('show'),1400);}
+/* ============ 時計 ============ */
+function tick(){const d=new Date(),days=['日','月','火','水','木','金','土'];
+  document.getElementById('clock').textContent=String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');
+  document.getElementById('date').textContent=`${d.getMonth()+1}/${d.getDate()}（${days[d.getDay()]}）`;}
+tick();setInterval(tick,1000);
+/* ============ フィット ============ */
+function fit(){const s=document.getElementById('stage');
+  const scale=Math.min(window.innerWidth/1080,window.innerHeight/1920);
+  s.style.transform=`translate(-50%,-50%) scale(${scale})`;
+  s.style.visibility='visible';}
+fit();window.addEventListener('resize',fit);
+window.addEventListener('load',fit);
+</script>
+</body>
+</html>
