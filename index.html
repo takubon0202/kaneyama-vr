@@ -143,6 +143,16 @@
     border:1.5px solid rgba(10,134,203,.2);color:var(--ink);font-size:21px;font-weight:800;box-shadow:0 6px 14px rgba(20,60,90,.08);}
   .chip .cdot{width:14px;height:14px;border-radius:50%;background:var(--ym-green);flex:0 0 auto;}
   .chip .cdot.b{background:var(--ym-blue);}
+  .footrow{display:flex;align-items:center;gap:16px;}
+  .ribbon{flex:1 1 auto;overflow:hidden;}
+  /* カートを見るボタン */
+  .cartfab{flex:0 0 auto;display:flex;align-items:center;gap:12px;padding:18px 28px;border-radius:16px;cursor:pointer;border:none;
+    background:linear-gradient(120deg,var(--ym-green),var(--ym-green-d));color:#fff;font-size:23px;font-weight:900;letter-spacing:1px;
+    box-shadow:0 8px 20px rgba(31,168,102,.4);}
+  .cartfab:active{transform:scale(.97);}
+  .cartfab .cf-ic{width:24px;height:20px;position:relative;border:3px solid #fff;border-top:none;border-radius:0 0 6px 6px;}
+  .cartfab .cf-ic::before{content:"";position:absolute;left:-3px;right:-3px;top:-9px;height:9px;border:3px solid #fff;border-bottom:none;border-radius:8px 8px 0 0;}
+  .cartfab .cf-num{min-width:32px;height:32px;border-radius:99px;background:#fff;color:var(--ym-green-d);display:grid;place-items:center;font-size:19px;padding:0 8px;}
   .swipe-hint{margin-top:18px;text-align:center;color:var(--ym-blue-d);font-size:23px;font-weight:800;letter-spacing:3px;display:flex;align-items:center;justify-content:center;gap:14px;}
   /* タッチ誘導ドット（絵文字不使用） */
   .tapdot{position:relative;width:22px;height:22px;border-radius:50%;flex:0 0 auto;
@@ -228,6 +238,42 @@
   .sheet .btn.buy{background:var(--ym-green);color:#fff;box-shadow:0 6px 16px rgba(92,181,49,.4);}
   .sheet .btn:active{transform:scale(.97);}
 
+  /* ====================== カートの中身 ====================== */
+  .cartview{position:absolute;inset:0;z-index:30;transform:translateY(100%);transition:transform .42s cubic-bezier(.22,1,.36,1);
+    background:linear-gradient(180deg,var(--cool),var(--cool2));display:flex;flex-direction:column;}
+  .cartview.open{transform:translateY(0);}
+  .cv-head{position:relative;padding:40px 48px 26px;color:#fff;background:linear-gradient(120deg,var(--ym-green),var(--ym-green-d));box-shadow:0 12px 26px rgba(31,168,102,.28);}
+  .cv-head .cv-title{font-size:52px;font-weight:900;letter-spacing:2px;margin-top:24px;}
+  .cv-list{flex:1 1 auto;overflow-y:auto;padding:28px 48px;display:flex;flex-direction:column;gap:20px;}
+  .cv-list::-webkit-scrollbar{width:8px;} .cv-list::-webkit-scrollbar-thumb{background:rgba(31,168,102,.3);border-radius:8px;}
+  .cv-empty{margin:auto;text-align:center;color:var(--ink-dim);font-size:30px;font-weight:800;}
+  .cv-empty small{display:block;font-size:21px;font-weight:600;margin-top:14px;}
+  .cvrow{display:flex;align-items:center;gap:22px;background:#fff;border:1px solid var(--line);border-radius:20px;padding:20px 24px;box-shadow:0 8px 18px rgba(20,60,90,.08);}
+  .cvrow .cv-th{width:110px;height:110px;border-radius:16px;flex:0 0 auto;position:relative;overflow:hidden;display:grid;place-items:center;background:linear-gradient(180deg,#f0f8fd,#e6f2f9);border:1px solid rgba(10,134,203,.08);}
+  .cvrow .cv-th .mono{font-size:52px;}
+  .cvrow .cv-info{flex:1 1 auto;min-width:0;}
+  .cvrow .cv-nm{font-size:28px;font-weight:800;color:var(--ink);}
+  .cvrow .cv-meta{font-size:19px;color:var(--ink-dim);margin-top:5px;}
+  .cvrow .cv-meta .cv-was{text-decoration:line-through;margin-right:8px;}
+  .cvrow .cv-meta .cv-off{color:#e5251e;font-weight:800;}
+  .cvrow .cv-right{display:flex;flex-direction:column;align-items:flex-end;gap:12px;flex:0 0 auto;}
+  .cvrow .cv-line{font-size:32px;font-weight:900;color:var(--ym-blue-d);white-space:nowrap;}
+  .qty{display:flex;align-items:center;gap:0;border:2px solid var(--line);border-radius:14px;overflow:hidden;}
+  .qty button{width:54px;height:54px;border:none;background:#fff;font-size:32px;font-weight:900;color:var(--ym-green-d);cursor:pointer;}
+  .qty button:active{background:var(--cool2);}
+  .qty .q{min-width:56px;text-align:center;font-size:26px;font-weight:900;color:var(--ink);}
+  .cv-foot{flex:0 0 auto;background:#fff;border-top:1px solid var(--line);padding:28px 48px 34px;box-shadow:0 -10px 30px rgba(20,60,90,.08);}
+  .cv-sum{display:flex;align-items:flex-end;justify-content:space-between;}
+  .cv-sum .cv-cnt{font-size:24px;font-weight:800;color:var(--ink-dim);}
+  .cv-sum .cv-total{font-size:34px;font-weight:800;color:var(--ink);}
+  .cv-sum .cv-total b{font-size:58px;font-weight:900;color:var(--ym-blue-d);margin:0 4px;}
+  .cv-sum .cv-total small{font-size:20px;color:var(--ink-dim);margin-left:6px;}
+  .cv-actions{display:flex;gap:18px;margin-top:24px;}
+  .cv-actions button{flex:0 0 auto;padding:24px 30px;border-radius:18px;font-size:26px;font-weight:800;cursor:pointer;border:none;}
+  .cv-actions .cv-clear{background:var(--cool2);color:var(--ink-dim);}
+  .cv-actions .cv-pay{flex:1 1 auto;background:linear-gradient(120deg,var(--ym-green),var(--ym-green-d));color:#fff;box-shadow:0 8px 20px rgba(31,168,102,.4);}
+  .cv-actions button:active{transform:scale(.98);}
+
   .toast{position:absolute;left:50%;top:120px;transform:translate(-50%,-30px);z-index:60;background:var(--ym-green);color:#fff;font-size:26px;font-weight:800;padding:22px 40px;border-radius:18px;box-shadow:0 20px 40px rgba(0,0,0,.28);opacity:0;pointer-events:none;transition:opacity .3s,transform .3s;display:flex;align-items:center;gap:14px;}
   .toast.show{opacity:1;transform:translate(-50%,0);}
 </style>
@@ -281,7 +327,10 @@
 
     <!-- フッター -->
     <div class="footer">
-      <div class="ribbon" id="ribbon"></div>
+      <div class="footrow">
+        <div class="ribbon" id="ribbon"></div>
+        <button class="cartfab" id="cartfab"><span class="cf-ic"></span>カートを見る<span class="cartnum cf-num">0</span></button>
+      </div>
       <div class="swipe-hint"><span class="tapdot"></span>気になる売場をタッチしてください</div>
     </div>
 
@@ -290,12 +339,31 @@
       <div class="p-head" id="phead">
         <div class="p-top">
           <div class="back" id="back"><span class="ar">‹</span> 店内マップへ</div>
-          <div class="p-cart">カート <span class="badge" id="cartBadge">0</span></div>
+          <div class="p-cart" id="pcart">カート <span class="badge cartnum">0</span></div>
         </div>
         <div class="p-title"><div class="pico" id="pico"></div><div><h2 id="pname"></h2><p id="pdesc"></p></div></div>
       </div>
       <div class="filters" id="filters"></div>
       <div class="grid" id="grid"></div>
+    </div>
+
+    <!-- カートの中身 -->
+    <div class="cartview" id="cartview">
+      <div class="cv-head">
+        <div class="back" id="cvBack"><span class="ar">‹</span> 買い物を続ける</div>
+        <div class="cv-title">カートの中身</div>
+      </div>
+      <div class="cv-list" id="cvlist"></div>
+      <div class="cv-foot" id="cvfoot">
+        <div class="cv-sum">
+          <div class="cv-cnt"><span id="cvCount">0</span>点</div>
+          <div class="cv-total">合計 <b>¥<span id="cvTotal">0</span></b><small>税込</small></div>
+        </div>
+        <div class="cv-actions">
+          <button class="cv-clear" id="cvClear">カートを空にする</button>
+          <button class="cv-pay" id="cvPay">お会計に進む</button>
+        </div>
+      </div>
     </div>
 
     <div class="modal" id="modal"><div class="sheet" id="sheet"></div></div>
@@ -529,7 +597,7 @@ const mono=s=>(s||'').replace(/\s/g,'').charAt(0);
 
 /* ============ 商品一覧 ============ */
 const products=document.getElementById('products'),grid=document.getElementById('grid'),filters=document.getElementById('filters');
-let cart=0,currentCorner=null;
+let cart={},currentCorner=null;
 function openCorner(id){
   sndOpen();
   const c=CORNERS.find(x=>x.id===id);currentCorner=c;
@@ -577,7 +645,7 @@ function renderGrid(filter){
       <h3>${it.n}</h3><div class="desc">${it.d}</div>
       <div class="row">${priceHTML}${sold?'':'<div class="add">＋</div>'}</div>`;
     const add=card.querySelector('.add');
-    if(add)add.addEventListener('click',e=>{e.stopPropagation();addCart();});
+    if(add)add.addEventListener('click',e=>{e.stopPropagation();addCart(it);});
     card.addEventListener('click',()=>openModal(it,sold));grid.appendChild(card);});
 }
 /* ============ 効果音（Web Audio・小音量・音源ファイル不要） ============ */
@@ -660,13 +728,66 @@ function openModal(it,sold){
     <div class="btn buy" id="mBuy" style="${sold?'opacity:.35;pointer-events:none':''}">${sold?'売り切れ':'カートに入れる'}</div></div>`;
   sndTap();modal.classList.add('open');
   sheet.querySelector('#mClose').addEventListener('click',()=>{sndBack();modal.classList.remove('open');});
-  if(!sold)sheet.querySelector('#mBuy').addEventListener('click',()=>{addCart();modal.classList.remove('open');});
+  if(!sold)sheet.querySelector('#mBuy').addEventListener('click',()=>{addCart(it);modal.classList.remove('open');});
 }
 modal.addEventListener('click',e=>{if(e.target===modal)modal.classList.remove('open');});
-/* ============ カート ============ */
+/* ============ カート（商品単位で管理） ============ */
 const toast=document.getElementById('toast');
-function addCart(){sndAdd();cart++;document.getElementById('cartBadge').textContent=cart;toast.classList.add('show');
-  clearTimeout(window._tt);window._tt=setTimeout(()=>toast.classList.remove('show'),1400);}
+const cartview=document.getElementById('cartview');
+const unit=it=>it.sale||it.p;                       // 適用単価（割引考慮）
+const cartCount=()=>Object.values(cart).reduce((a,e)=>a+e.qty,0);
+const cartTotal=()=>Object.values(cart).reduce((a,e)=>a+unit(e.it)*e.qty,0);
+function updateBadges(){const n=cartCount();document.querySelectorAll('.cartnum').forEach(e=>e.textContent=n);}
+function addCart(it){
+  sndAdd();
+  if(it){const k=it.img;(cart[k]=cart[k]||{it,qty:0}).qty++;}
+  updateBadges();
+  toast.classList.add('show');clearTimeout(window._tt);window._tt=setTimeout(()=>toast.classList.remove('show'),1400);
+}
+function setQty(key,delta){
+  const e=cart[key];if(!e)return;e.qty+=delta;if(e.qty<=0)delete cart[key];
+  delta>0?sndAdd():sndTap();updateBadges();renderCart();
+}
+function renderCart(){
+  const list=document.getElementById('cvlist');list.innerHTML='';
+  const entries=Object.entries(cart);
+  if(!entries.length){
+    list.innerHTML='<div class="cv-empty">カートは空です<small>売場や「本日のおすすめ・特売」から商品を追加できます</small></div>';
+  }else{
+    entries.forEach(([key,{it,qty}])=>{
+      const row=document.createElement('div');row.className='cvrow';
+      const meta=it.sale
+        ?`<span class="cv-was">¥${it.p.toLocaleString()}</span><span class="cv-off">¥${it.sale.toLocaleString()}（${it.off}%OFF）</span>`
+        :`¥${it.p.toLocaleString()}`;
+      row.innerHTML=`
+        <div class="cv-th"><span class="mono" style="color:${COLOR(it._cid)}">${mono(it.n)}</span><img class="pimg" src="${it.img}" alt="" onerror="this.remove()"></div>
+        <div class="cv-info"><div class="cv-nm">${it.n}</div><div class="cv-meta">単価 ${meta} ／ ${it.d}</div></div>
+        <div class="cv-right">
+          <div class="cv-line">¥${(unit(it)*qty).toLocaleString()}</div>
+          <div class="qty"><button data-k="${key}" data-d="-1">−</button><span class="q">${qty}</span><button data-k="${key}" data-d="1">＋</button></div>
+        </div>`;
+      list.appendChild(row);
+    });
+    list.querySelectorAll('.qty button').forEach(b=>b.addEventListener('click',()=>setQty(b.dataset.k,+b.dataset.d)));
+  }
+  document.getElementById('cvCount').textContent=cartCount();
+  document.getElementById('cvTotal').textContent=cartTotal().toLocaleString();
+}
+function openCart(){sndOpen();renderCart();cartview.classList.add('open');}
+/* 売場の色をidから取得（カートのサムネ用） */
+const COLOR=id=>{const c=CORNERS.find(x=>x.id===id);return c?c.color:'#e5251e';};
+document.getElementById('cartfab').addEventListener('click',openCart);
+document.getElementById('pcart').addEventListener('click',openCart);
+document.getElementById('cvBack').addEventListener('click',()=>{sndBack();cartview.classList.remove('open');});
+document.getElementById('cvClear').addEventListener('click',()=>{sndBack();cart={};updateBadges();renderCart();});
+document.getElementById('cvPay').addEventListener('click',()=>{
+  if(!cartCount())return;
+  sndDeal();
+  const n=cartCount(),t=cartTotal();
+  toast.textContent=`お会計：${n}点 ¥${t.toLocaleString()}（デモ）`;toast.classList.add('show');
+  clearTimeout(window._tt);window._tt=setTimeout(()=>{toast.classList.remove('show');toast.textContent='カートに追加しました';},2200);
+  cart={};updateBadges();renderCart();cartview.classList.remove('open');
+});
 /* ============ 時計 ============ */
 function tick(){const d=new Date(),days=['日','月','火','水','木','金','土'];
   document.getElementById('clock').textContent=String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');
