@@ -201,17 +201,27 @@
   .card .add{width:62px;height:62px;border-radius:16px;display:grid;place-items:center;font-size:36px;font-weight:800;background:var(--ym-green);color:#fff;box-shadow:0 6px 16px rgba(92,181,49,.4);}
   .card .add:active{transform:scale(.9);}
 
-  .modal{position:absolute;inset:0;z-index:40;display:none;align-items:flex-end;justify-content:center;background:rgba(20,35,45,.5);backdrop-filter:blur(5px);}
+  /* 商品詳細モーダル（画面中央に表示） */
+  .modal{position:absolute;inset:0;z-index:40;display:none;align-items:center;justify-content:center;padding:60px 48px;background:rgba(20,35,45,.55);backdrop-filter:blur(6px);}
   .modal.open{display:flex;}
-  .sheet{width:100%;max-height:85%;overflow-y:auto;background:#fff;border-top-left-radius:34px;border-top-right-radius:34px;border-top:4px solid var(--ym-blue);padding:36px 48px 52px;box-shadow:0 -30px 60px rgba(0,0,0,.3);animation:up .35s;}
-  @keyframes up{from{transform:translateY(40px)}to{transform:translateY(0)}}
-  .sheet .bar{width:80px;height:8px;border-radius:99px;background:rgba(0,0,0,.12);margin:0 auto 26px;}
+  .sheet{width:100%;max-width:880px;max-height:88%;overflow-y:auto;background:#fff;border-radius:34px;border:1px solid var(--line);border-top:6px solid var(--ym-blue);padding:44px 48px 48px;box-shadow:0 40px 90px rgba(0,0,0,.45);animation:pop .32s cubic-bezier(.22,1,.36,1);}
+  @keyframes pop{from{transform:scale(.9);opacity:0}to{transform:scale(1);opacity:1}}
   .sheet .m-top{display:flex;gap:28px;}
   .sheet .m-thumb{position:relative;overflow:hidden;width:230px;height:230px;border-radius:24px;display:grid;place-items:center;font-size:130px;flex:0 0 auto;background:linear-gradient(180deg,#f0f8fd,#e6f2f9);border:1px solid rgba(10,134,203,.1);}
   .sheet h2{font-size:48px;font-weight:900;color:var(--ink);} .sheet .m-sub{font-size:22px;color:var(--ink-dim);margin-top:10px;line-height:1.5;}
   .sheet .specs{display:flex;gap:12px;margin-top:20px;flex-wrap:wrap;}
   .sheet .specs span{font-size:20px;font-weight:700;padding:10px 18px;border-radius:13px;background:var(--cool2);color:var(--ink);}
   .sheet .m-price{font-size:62px;font-weight:900;margin-top:24px;color:var(--ym-blue-d);} .sheet .m-price small{font-size:24px;color:var(--ink-dim);}
+  /* 成分表 */
+  .m-nutri{margin-top:28px;border:1px solid var(--line);border-radius:16px;overflow:hidden;}
+  .m-nutri .nt-h{background:var(--cool2);padding:14px 22px;font-size:20px;font-weight:900;color:var(--ym-blue-d);display:flex;justify-content:space-between;align-items:center;}
+  .m-nutri .nt-h span{font-size:15px;font-weight:700;color:var(--ink-dim);}
+  .m-nutri table{width:100%;border-collapse:collapse;}
+  .m-nutri td{padding:13px 22px;font-size:21px;border-top:1px solid var(--line);}
+  .m-nutri td.k{color:var(--ink-dim);font-weight:700;}
+  .m-nutri td.v{text-align:right;font-weight:800;color:var(--ink);white-space:nowrap;}
+  .m-nutri .alle{padding:13px 22px;font-size:17px;color:var(--ink-dim);border-top:1px solid var(--line);line-height:1.5;}
+  .m-nutri .alle b{color:#e5251e;font-weight:800;}
   .sheet .m-actions{display:flex;gap:18px;margin-top:28px;}
   .sheet .btn{flex:1;text-align:center;padding:28px;border-radius:20px;font-size:30px;font-weight:800;cursor:pointer;}
   .sheet .btn.ghost{background:var(--cool2);border:1px solid var(--line);color:var(--ink);}
@@ -446,7 +456,7 @@ const CORNERS=[
 ];
 
 /* 各商品に画像パスを割当（images/<売場id>_<番号>.png）。未生成なら文字に自動フォールバック */
-CORNERS.forEach(c=>c.items.forEach((it,i)=>{it.img=`images/${c.id}_${i}.png`;}));
+CORNERS.forEach(c=>c.items.forEach((it,i)=>{it.img=`images/${c.id}_${i}.png`;it._cid=c.id;}));
 
 /* ============================================================
    一般的なスーパーの順路（黄金ルート）に基づく売場再配置
@@ -521,6 +531,7 @@ const mono=s=>(s||'').replace(/\s/g,'').charAt(0);
 const products=document.getElementById('products'),grid=document.getElementById('grid'),filters=document.getElementById('filters');
 let cart=0,currentCorner=null;
 function openCorner(id){
+  sndOpen();
   const c=CORNERS.find(x=>x.id===id);currentCorner=c;
   document.getElementById('pname').textContent=c.name;
   document.getElementById('pdesc').textContent=`${c.items.length}商品　・　ヤマザワ 金山中央公民館デジタル店`;
@@ -528,10 +539,11 @@ function openCorner(id){
   document.getElementById('phead').style.setProperty('--ph',c.color);
   buildFilters();renderGrid('all');products.classList.add('open');
 }
-document.getElementById('back').addEventListener('click',()=>products.classList.remove('open'));
+document.getElementById('back').addEventListener('click',()=>{sndBack();products.classList.remove('open');});
 
 /* 本日のおすすめ・特売（全売場から割引＋イチオシを集約） */
 function openDeals(){
+  sndDeal();
   const items=[];
   CORNERS.forEach(c=>c.items.forEach(it=>{if(it.sale||it.tag)items.push(it);}));
   items.sort((a,b)=>((b.sale?1:0)-(a.sale?1:0))||((b.off||0)-(a.off||0)));
@@ -548,7 +560,7 @@ function buildFilters(){
   filters.innerHTML='';
   [['all','すべて'],['sale','割引中'],['rec','おすすめ'],['stock','在庫あり']].forEach(([k,label],i)=>{
     const b=document.createElement('button');b.textContent=label;if(i===0)b.classList.add('on');
-    b.addEventListener('click',()=>{[...filters.children].forEach(x=>x.classList.remove('on'));b.classList.add('on');renderGrid(k);});
+    b.addEventListener('click',()=>{sndTap();[...filters.children].forEach(x=>x.classList.remove('on'));b.classList.add('on');renderGrid(k);});
     filters.appendChild(b);});
 }
 function renderGrid(filter){
@@ -568,25 +580,92 @@ function renderGrid(filter){
     if(add)add.addEventListener('click',e=>{e.stopPropagation();addCart();});
     card.addEventListener('click',()=>openModal(it,sold));grid.appendChild(card);});
 }
+/* ============ 効果音（Web Audio・小音量・音源ファイル不要） ============ */
+let _ac;
+function _audio(){try{if(!_ac)_ac=new (window.AudioContext||window.webkitAudioContext)();if(_ac.state==='suspended')_ac.resume();return _ac;}catch(e){return null;}}
+function beep(freqs,dur=0.08,vol=0.035,type='sine'){
+  const ac=_audio();if(!ac)return;const arr=Array.isArray(freqs)?freqs:[freqs];
+  arr.forEach((f,i)=>{const o=ac.createOscillator(),g=ac.createGain();o.type=type;o.frequency.value=f;
+    o.connect(g);g.connect(ac.destination);const st=ac.currentTime+i*dur;
+    g.gain.setValueAtTime(0.0001,st);g.gain.exponentialRampToValueAtTime(vol,st+0.012);
+    g.gain.exponentialRampToValueAtTime(0.0001,st+dur);o.start(st);o.stop(st+dur+0.02);});}
+const sndTap =()=>beep(600,0.07,0.030);
+const sndOpen=()=>beep([520,760],0.07,0.032);
+const sndAdd =()=>beep([880,1245],0.09,0.040,'triangle');
+const sndBack=()=>beep(360,0.09,0.026);
+const sndDeal=()=>beep([660,990,1320],0.07,0.038,'triangle');
+
+/* ============ 成分表（カテゴリ別に妥当な値を生成。100gあたり目安） ============ */
+const FOODGRP={produce:'veg',sanchoku:'veg',fish:'fish',meat:'meat',deli:'cook',himawari:'cook',frozen:'cook',
+  dairy:'dairy',bakery:'bread',sweets:'sweet',noodle:'noodle',season:'season',drink:'drink',liquor:'liquor',rice:'rice'};
+const PROF={ /* [kcal,prot,fat,carb,salt] それぞれ [min,max] */
+  veg:[[20,60],[.5,2],[.1,.4],[4,14],[0,.02]], fish:[[110,210],[18,24],[3,14],[0,.6],[.1,.4]],
+  meat:[[150,360],[14,21],[8,32],[.1,.6],[.1,.3]], cook:[[140,290],[7,15],[8,20],[10,24],[.9,1.8]],
+  dairy:[[45,160],[3,9],[2,11],[4,13],[.1,.5]], bread:[[250,330],[7,10],[7,15],[42,55],[.8,1.3]],
+  sweet:[[380,560],[3,8],[18,32],[50,68],[.1,.6]], noodle:[[320,360],[8,12],[2,14],[58,72],[.8,4]],
+  season:[[80,200],[2,9],[0,14],[6,28],[2,15]], drink:[[0,52],[0,1],[0,.5],[0,13],[0,.05]],
+  liquor:[[40,240],[0,1],[0,0],[0,8],[0,.02]], rice:[[340,355],[5,7],[.8,1.5],[74,78],[0,.01]],
+};
+const ALLE=[['えび',/海老|えび|エビ/],['かに',/かに|カニ|蟹/],
+  ['小麦',/パン|クロワッサン|ベーグル|フランス|うどん|ラーメン|麺|パスタ|フライ|天ぷら|唐揚|からあげ|カレー|餃子|ピザ|かまぼこ|ちくわ|はんぺん|ソーセージ|メロン|ドッグ|サンド/],
+  ['卵',/たまご|玉子|卵|マヨ|オムレツ|親子|はんぺん|プリン/],
+  ['乳',/チーズ|ヨーグルト|牛乳|ミルク|バター|アイス|クリーム|ラテ|ソフト/],
+  ['そば',/そば|蕎麦/],['落花生',/ピーナッツ|落花生/]];
+function _hash(s){let h=2166136261>>>0;for(const ch of s){h^=ch.codePointAt(0);h=Math.imul(h,16777619)>>>0;}return h;}
+function _pick(seed,lo,hi,dec){const r=((seed>>>0)%10007)/10007;const v=lo+(hi-lo)*r;const m=Math.pow(10,dec||0);return Math.round(v*m)/m;}
+function nutriHTML(it){
+  const cid=it._cid, txt=`${it.n} ${it.d}`, h=_hash(it.n);
+  /* 非食品（日用品・花）は商品情報を表示 */
+  if(cid==='daily'||cid==='flower'){
+    const rows=[['区分', cid==='flower'?'生花・園芸用品':'日用品・生活雑貨'],
+      ['原産国', (h%3===0)?'中国':'日本'],['内容量', it.unit&&it.unit!=='税込'?it.unit:'1点'],
+      ['JANコード', '49'+String(10000000000+ (h%89999999999)).slice(0,11)]];
+    return `<div class="m-nutri"><div class="nt-h">商品情報</div><table>${
+      rows.map(r=>`<tr><td class="k">${r[0]}</td><td class="v">${r[1]}</td></tr>`).join('')}</table>
+      <div class="alle">※食品ではありません。用途・使用上の注意は商品本体の表示をご確認ください。</div></div>`;
+  }
+  const g=FOODGRP[cid]||'cook', P=PROF[g];
+  let kcal=_pick(h,P[0][0],P[0][1],0), prot=_pick(h>>2,P[1][0],P[1][1],1),
+      fat=_pick(h>>4,P[2][0],P[2][1],1), carb=_pick(h>>6,P[3][0],P[3][1],1), salt=_pick(h>>8,P[4][0],P[4][1],2);
+  /* 油・醤油などの特例 */
+  if(/サラダ油|ごま油|オリーブ|食用油/.test(txt)){kcal=921;prot=0;fat=100;carb=0;salt=0;}
+  if(/醤油|しょうゆ/.test(txt)){kcal=71;prot=7.7;fat=0;carb=10.1;salt=14.5;}
+  if(/味噌|みそ/.test(txt)){kcal=182;prot=11;fat=6;carb=21;salt=12.1;}
+  /* アレルギー */
+  let al=ALLE.filter(a=>a[1].test(txt)).map(a=>a[0]);
+  if(/豆腐|納豆|味噌|醤油|油揚|厚揚|がんも|きなこ/.test(txt)) al.push('大豆');
+  al=[...new Set(al)];
+  const alle = al.length ? `特定原材料等：<b>${al.join('・')}</b>` : '特定原材料等：表示対象なし（同一ラインで該当品目を製造）';
+  /* 原産地 */
+  const origin = /山形|つや姫|はえぬき|雪若丸|だだちゃ|佐藤錦|米沢|ラ・フランス|庄内/.test(txt) ? '山形県'
+    : (it.tag&&/県産|朝採れ|ブランド|地場|産直/.test(it.tag[0])) ? '国産（県産）' : '国産';
+  const rows=[['エネルギー',`${kcal} kcal`],['たんぱく質',`${prot} g`],['脂質',`${fat} g`],
+    ['炭水化物',`${carb} g`],['食塩相当量',`${salt} g`],['原産地',origin]];
+  return `<div class="m-nutri"><div class="nt-h">栄養成分表示 <span>100gあたり（目安）</span></div><table>${
+    rows.map(r=>`<tr><td class="k">${r[0]}</td><td class="v">${r[1]}</td></tr>`).join('')}</table>
+    <div class="alle">${alle}</div></div>`;
+}
+
 /* ============ 詳細モーダル ============ */
 const modal=document.getElementById('modal'),sheet=document.getElementById('sheet');
 function openModal(it,sold){
-  sheet.innerHTML=`<div class="bar"></div><div class="m-top"><div class="m-thumb"><span class="mono" style="color:${currentCorner.color}">${mono(it.n)}</span><img class="pimg" src="${it.img}" alt="" onerror="this.remove()"></div>
+  sheet.innerHTML=`<div class="m-top"><div class="m-thumb"><span class="mono" style="color:${currentCorner.color}">${mono(it.n)}</span><img class="pimg" src="${it.img}" alt="" onerror="this.remove()"></div>
     <div><h2>${it.n}</h2><div class="m-sub">${it.d}</div>
     <div class="specs"><span>在庫 ${it.stk}点</span>${it.tag?`<span>${it.tag[0]}</span>`:''}${it.sale?`<span>本日特価</span>`:''}<span>金山中央公民館店</span></div>
     ${it.sale
       ?`<div class="m-price"><span class="m-was">¥${it.p.toLocaleString()}</span><span class="m-now">¥${it.sale.toLocaleString()}</span><span class="m-off">${it.off}%OFF</span><small> ${it.unit||'税込'}</small></div>`
       :`<div class="m-price">¥${it.p.toLocaleString()}<small> ${it.unit||'税込'}</small></div>`}</div></div>
+    ${nutriHTML(it)}
     <div class="m-actions"><div class="btn ghost" id="mClose">閉じる</div>
     <div class="btn buy" id="mBuy" style="${sold?'opacity:.35;pointer-events:none':''}">${sold?'売り切れ':'カートに入れる'}</div></div>`;
-  modal.classList.add('open');
-  sheet.querySelector('#mClose').addEventListener('click',()=>modal.classList.remove('open'));
+  sndTap();modal.classList.add('open');
+  sheet.querySelector('#mClose').addEventListener('click',()=>{sndBack();modal.classList.remove('open');});
   if(!sold)sheet.querySelector('#mBuy').addEventListener('click',()=>{addCart();modal.classList.remove('open');});
 }
 modal.addEventListener('click',e=>{if(e.target===modal)modal.classList.remove('open');});
 /* ============ カート ============ */
 const toast=document.getElementById('toast');
-function addCart(){cart++;document.getElementById('cartBadge').textContent=cart;toast.classList.add('show');
+function addCart(){sndAdd();cart++;document.getElementById('cartBadge').textContent=cart;toast.classList.add('show');
   clearTimeout(window._tt);window._tt=setTimeout(()=>toast.classList.remove('show'),1400);}
 /* ============ 時計 ============ */
 function tick(){const d=new Date(),days=['日','月','火','水','木','金','土'];
